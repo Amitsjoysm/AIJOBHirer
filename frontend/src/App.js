@@ -66,6 +66,7 @@ function App() {
             <Route path="/candidates/:candidateId" element={<PrivateRoute><CandidateDetailPage /></PrivateRoute>} />
             <Route path="/interviews" element={<PrivateRoute><InterviewsPage /></PrivateRoute>} />
             <Route path="/analytics" element={<PrivateRoute><AnalyticsPage /></PrivateRoute>} />
+            <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
             <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           </Routes>
           <Toaster position="top-right" expand={false} richColors />
