@@ -92,3 +92,81 @@ Available agents:
         
         decision = await self._call_llm_json(messages, temperature=0.3)
         return decision
+    
+    async def process_chat_message(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a chat message and determine appropriate response and actions"""
+        
+        message = context.get("message", "")
+        conversation_history = context.get("conversation_history", [])
+        company = context.get("company", {})
+        jobs = context.get("jobs", [])
+        applications = context.get("applications", [])
+        
+        # Build context summary
+        context_summary = f"""
+Company: {company.get('name', 'Not set')}
+Active Jobs: {len([j for j in jobs if j.get('status') == 'active'])}
+Total Applications: {len(applications)}
+Recent Applications: {len([a for a in applications if a.get('status') == 'submitted'])} new
+        """
+        
+        system_prompt = f"""You are an AI hiring assistant for HireFlow AI. You help users manage their hiring process.
+
+Current Context:
+{context_summary}
+
+You can help with:
+- Creating job descriptions
+- Reviewing applications
+- Scheduling interviews
+- Analyzing hiring metrics
+- Answering questions about candidates
+
+Respond naturally and helpfully. If the user asks you to perform an action (like creating a job or scheduling an interview), acknowledge it and provide guidance on next steps.
+
+For actions, include in your response:
+- A helpful conversational response
+- Suggested action (if any): job_creation, review_applications, schedule_interview, analytics, general_help
+"""
+        
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        # Add conversation history
+        for msg in conversation_history[-5:]:  # Last 5 messages
+            messages.append(msg)
+        
+        # Add current message
+        messages.append({"role": "user", "content": message})
+        
+        # Get response
+        try:
+            response_text = await self._call_llm(messages, temperature=0.7)
+            
+            # Determine if an action should be suggested
+            action_detection_prompt = f"""Based on this user message: "{message}"
+            
+And assistant response: "{response_text}"
+
+Determine if a specific action should be taken. Return JSON:
+{{"action": "job_creation|review_applications|schedule_interview|analytics|general_help", "confidence": 0.0-1.0}}
+
+Only suggest actions if the user explicitly asks for them."""
+            
+            action_result = await self._call_llm_json([
+                {"role": "system", "content": action_detection_prompt}
+            ], temperature=0.3)
+            
+            return {
+                "response": response_text,
+                "action_taken": action_result.get("action") if action_result.get("confidence", 0) > 0.7 else None,
+                "data": {
+                    "jobs_count": len(jobs),
+                    "applications_count": len(applications)
+                }
+            }
+        except Exception as e:
+            return {
+                "response": "I'm here to help you with your hiring needs! You can ask me about creating jobs, reviewing applications, scheduling interviews, or analyzing your hiring metrics.",
+                "action_taken": None,
+                "data": {}
+            }
