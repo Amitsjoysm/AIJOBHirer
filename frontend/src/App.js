@@ -17,6 +17,7 @@ import CandidatesPage from './pages/CandidatesPage';
 import CandidateDetailPage from './pages/CandidateDetailPage';
 import InterviewsPage from './pages/InterviewsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/EnhancedSettingsPage';
 import CareerPage from './pages/CareerPage';
 import ApplyPage from './pages/ApplyPage';
