@@ -78,3 +78,12 @@ urllib3==2.5.0
 uvicorn==0.25.0
 watchfiles==1.1.1
 yarl==1.22.0
+redis==5.0.1
+rq==1.15.1
+google-auth==2.27.0
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.116.0
+msal==1.26.0
+slowapi==0.1.9
+Pillow==10.2.0
