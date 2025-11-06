@@ -79,7 +79,19 @@ async def startup_db():
     await db.applications.create_index("job_id")
     await db.applications.create_index("candidate_id")
     await db.applications.create_index(["job_id", "status"])
+    await db.email_configs.create_index("company_id", unique=True)
     logger.info("Database indexes created")
+    
+    # Initialize Redis connection
+    try:
+        from services.redis_service import RedisService
+        redis_service = RedisService()
+        if redis_service.ping():
+            logger.info("Redis connection established")
+        else:
+            logger.warning("Redis connection failed - background jobs will not work")
+    except Exception as e:
+        logger.warning(f"Redis initialization failed: {str(e)} - background jobs will not work")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
