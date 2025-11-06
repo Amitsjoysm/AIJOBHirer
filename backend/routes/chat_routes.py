@@ -184,9 +184,9 @@ async def delete_chat_session(
 ):
     """Delete a chat session"""
     
-    await db_service.delete_documents(
-        "chat_history",
+    # Delete all messages in the session
+    result = await db.chat_history.delete_many(
         {"session_id": session_id, "user_id": current_user["id"]}
     )
     
-    return {"message": "Session deleted successfully"}
+    return {"message": f"Session deleted successfully. Removed {result.deleted_count} messages."}
