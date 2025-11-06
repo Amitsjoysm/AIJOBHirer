@@ -45,7 +45,8 @@ from routes import (
     application_routes, 
     candidate_routes, 
     interview_routes, 
-    analytics_routes
+    analytics_routes,
+    chat_routes
 )
 
 # Include all routes
