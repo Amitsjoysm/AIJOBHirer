@@ -48,6 +48,8 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+            <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
             <Route path="/careers/:companySlug" element={<CareerPage />} />
             <Route path="/apply/:jobId" element={<ApplyPage />} />
             
