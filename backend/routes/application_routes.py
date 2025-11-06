@@ -110,7 +110,7 @@ async def submit_application(
     return application
 
 async def process_application(application_id: str, job: dict):
-    """Background task to process application with AI"""
+    """Background task to process application with AI and send emails"""
     try:
         # Get application
         application = await db_service.get_document("applications", {"id": application_id})
@@ -165,27 +165,22 @@ async def process_application(application_id: str, job: dict):
                 {"ai_evaluation": evaluation}
             )
             
-            # Send confirmation email
-            email_agent = EmailAgent(groq_service)
-            email_input = AgentInput(
-                task="compose_email",
-                context={
-                    "email_type": "confirmation",
-                    "candidate_name": application["candidate_name"],
-                    "company_name": company.get("name", "Our Company") if company else "Our Company",
-                    "job_title": job["title"],
-                    "tone": company.get("persona", {}).get("tone", "professional") if company else "professional",
-                    "persona": company.get("persona", {}) if company else {},
-                    "signature": company.get("email_config", {}).get("signature", "") if company else ""
-                }
-            )
+            # Queue confirmation email
+            try:
+                from services.queue_service import QueueService
+                from jobs.email_jobs import send_application_email
+                
+                queue_service = QueueService()
+                queue_service.enqueue_email_job(
+                    send_application_email,
+                    application_id,
+                    "confirmation"
+                )
+                logger.info(f"Confirmation email queued for application {application_id}")
+            except Exception as e:
+                logger.error(f"Failed to queue confirmation email: {str(e)}")
             
-            email_result = await email_agent.execute(email_input)
-            
-            # In production, actually send the email here
-            print(f"Email composed: {email_result.result.get('subject')}")
-            
-            # If strong match, update status
+            # If strong match, update status and send shortlisted email
             if evaluation and evaluation.get("recommendation") == "strong_match":
                 await db_service.update_document(
                     "applications",
@@ -193,16 +188,36 @@ async def process_application(application_id: str, job: dict):
                     {"status": ApplicationStatus.SHORTLISTED}
                 )
                 
-                # Send shortlisted email
-                email_input.context["email_type"] = "shortlisted"
-                email_input.context["additional_context"] = {
-                    "evaluation_summary": evaluation.get("summary", ""),
-                    "strengths": evaluation.get("strengths", [])
-                }
-                await email_agent.execute(email_input)
+                # Queue shortlisted email
+                try:
+                    queue_service.enqueue_email_job(
+                        send_application_email,
+                        application_id,
+                        "shortlisted"
+                    )
+                    logger.info(f"Shortlisted email queued for application {application_id}")
+                except Exception as e:
+                    logger.error(f"Failed to queue shortlisted email: {str(e)}")
+            
+            # If not a good match, schedule rejection email (after delay)
+            elif evaluation and evaluation.get("recommendation") == "not_a_fit":
+                # Queue rejection email to be sent after 48 hours (configurable)
+                try:
+                    from rq.job import Job
+                    from datetime import timedelta
+                    
+                    queue_service.email_queue.enqueue_in(
+                        timedelta(hours=48),
+                        send_application_email,
+                        application_id,
+                        "rejected"
+                    )
+                    logger.info(f\"Rejection email scheduled for application {application_id} (48h delay)\")
+                except Exception as e:
+                    logger.error(f\"Failed to schedule rejection email: {str(e)}\")
         
     except Exception as e:
-        print(f"Failed to process application: {str(e)}")
+        logger.error(f\"Failed to process application: {str(e)}\")
 
 @router.get("/job/{job_id}", response_model=List[Application])
 async def get_job_applications(
