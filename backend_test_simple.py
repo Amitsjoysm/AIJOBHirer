@@ -138,10 +138,11 @@ class APITester:
                 print(f"  ❌ Login failed for {cred['email']}")
                 auth_success = False
         
-        # Test registration
+        # Test registration with a unique email
         print("  Testing user registration...")
+        unique_email = f"test_user_{datetime.now().strftime('%Y%m%d%H%M%S')}@example.com"
         register_data = {
-            "email": "test_user@example.com",
+            "email": unique_email,
             "password": "testpass123",
             "full_name": "Test User",
             "role": "hiring_manager"
