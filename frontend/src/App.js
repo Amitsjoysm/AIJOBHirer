@@ -16,7 +16,7 @@ import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
 import CandidatesPage from './pages/CandidatesPage';
 import InterviewsPage from './pages/InterviewsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
-import SettingsPage from './pages/SettingsPage';
+import SettingsPage from './pages/EnhancedSettingsPage';
 import CareerPage from './pages/CareerPage';
 import ApplyPage from './pages/ApplyPage';
 import { GoogleCallbackPage, MicrosoftCallbackPage } from './pages/OAuthCallbackPage';
