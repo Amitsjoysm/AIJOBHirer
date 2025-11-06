@@ -86,7 +86,8 @@ const CandidatesPage = () => {
             {filteredCandidates.map((candidate) => (
               <Card 
                 key={candidate.id} 
-                className="hover:shadow-lg transition-shadow"
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/candidates/${candidate.id}`)}
                 data-testid={`candidate-${candidate.id}`}
               >
                 <CardContent className="pt-6">
