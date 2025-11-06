@@ -21,6 +21,15 @@ class OrchestratorAgent(BaseAgent):
         self._log(f"Orchestrating task: {input_data.task}")
         
         try:
+            # Special handling for chat messages
+            if input_data.task == "process_chat":
+                result = await self.process_chat_message(input_data.context)
+                return AgentOutput(
+                    success=True,
+                    result=result,
+                    metadata={"orchestrator": "chat_processed"}
+                )
+            
             # Analyze the task and determine the appropriate agent
             agent_decision = await self._decide_agent(input_data)
             
