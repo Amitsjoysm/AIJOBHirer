@@ -32,6 +32,7 @@ const DashboardLayout = ({ children }) => {
     { path: '/candidates', icon: <Users className="w-5 h-5" />, label: 'Candidates' },
     { path: '/interviews', icon: <Calendar className="w-5 h-5" />, label: 'Interviews' },
     { path: '/analytics', icon: <BarChart3 className="w-5 h-5" />, label: 'Analytics' },
+    { path: '/chat', icon: <MessageSquare className="w-5 h-5" />, label: 'AI Assistant' },
     { path: '/settings', icon: <Settings className="w-5 h-5" />, label: 'Settings' },
   ];
 
