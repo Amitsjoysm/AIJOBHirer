@@ -45,16 +45,30 @@ class APITester:
     async def make_request(self, method: str, endpoint: str, data: Dict = None, 
                          headers: Dict = None, params: Dict = None) -> Dict[str, Any]:
         """Make HTTP request and return response data"""
-        # Ensure endpoint ends with / to avoid redirects
-        if not endpoint.endswith('/') and '?' not in endpoint and not endpoint.split('/')[-1].count('.'):
-            endpoint = endpoint + '/'
-        
         url = f"{BACKEND_URL}{endpoint}"
         
         try:
             async with self.session.request(
-                method, url, json=data, headers=headers, params=params
+                method, url, json=data, headers=headers, params=params, allow_redirects=True
             ) as response:
+                # Handle redirects manually to preserve headers
+                if response.status in [301, 302, 307, 308] and headers:
+                    redirect_url = str(response.headers.get('Location', ''))
+                    if redirect_url:
+                        async with self.session.request(
+                            method, redirect_url, json=data, headers=headers, params=params
+                        ) as redirect_response:
+                            try:
+                                response_data = await redirect_response.json()
+                            except:
+                                response_data = {"text": await redirect_response.text()}
+                            
+                            return {
+                                "status": redirect_response.status,
+                                "data": response_data,
+                                "success": 200 <= redirect_response.status < 300
+                            }
+                
                 try:
                     response_data = await response.json()
                 except:
