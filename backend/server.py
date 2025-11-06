@@ -61,6 +61,11 @@ api_router.include_router(interview_routes.router, prefix="/interviews", tags=["
 api_router.include_router(analytics_routes.router, prefix="/analytics", tags=["Analytics"])
 api_router.include_router(chat_routes.router, prefix="/chat", tags=["Chat"])
 
+# Add health endpoint to api_router
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "version": "1.0.0"}
+
 app.include_router(api_router)
 
 # Import middleware
@@ -131,7 +136,3 @@ async def startup_db():
 async def shutdown_db_client():
     client.close()
     logger.info("Database connection closed")
-
-@api_router.get("/health")
-async def health_check():
-    return {"status": "healthy", "version": "1.0.0"}
