@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
 import { Sparkles, User, Mail, Lock } from 'lucide-react';
+import { GoogleOAuthButton, MicrosoftOAuthButton } from '../components/OAuthButtons';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
