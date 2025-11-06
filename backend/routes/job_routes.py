@@ -65,7 +65,8 @@ async def create_job(
         "view_count": 0,
         "application_count": 0,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "published_at": None
     }
     
     # If AI generation requested, generate content
