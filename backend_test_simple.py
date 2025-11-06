@@ -60,6 +60,11 @@ class APITester:
                                        data: Dict = None, params: Dict = None) -> Dict[str, Any]:
         """Make authenticated HTTP request"""
         headers = {"Authorization": f"Bearer {token}"}
+        
+        # Add trailing slash to avoid redirects that lose headers
+        if not endpoint.endswith('/') and '?' not in endpoint and not endpoint.split('/')[-1].count('.'):
+            endpoint = endpoint + '/'
+        
         url = f"{BACKEND_URL}{endpoint}"
         
         try:
