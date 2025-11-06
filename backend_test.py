@@ -45,46 +45,43 @@ class APITester:
     async def make_request(self, method: str, endpoint: str, data: Dict = None, 
                          headers: Dict = None, params: Dict = None) -> Dict[str, Any]:
         """Make HTTP request and return response data"""
-        url = f"{BACKEND_URL}{endpoint}"
+        # Try both with and without trailing slash to handle FastAPI redirects
+        urls_to_try = [f"{BACKEND_URL}{endpoint}"]
         
-        try:
-            async with self.session.request(
-                method, url, json=data, headers=headers, params=params, allow_redirects=True
-            ) as response:
-                # Handle redirects manually to preserve headers
-                if response.status in [301, 302, 307, 308] and headers:
-                    redirect_url = str(response.headers.get('Location', ''))
-                    if redirect_url:
-                        async with self.session.request(
-                            method, redirect_url, json=data, headers=headers, params=params
-                        ) as redirect_response:
-                            try:
-                                response_data = await redirect_response.json()
-                            except:
-                                response_data = {"text": await redirect_response.text()}
-                            
-                            return {
-                                "status": redirect_response.status,
-                                "data": response_data,
-                                "success": 200 <= redirect_response.status < 300
-                            }
-                
-                try:
-                    response_data = await response.json()
-                except:
-                    response_data = {"text": await response.text()}
-                
-                return {
-                    "status": response.status,
-                    "data": response_data,
-                    "success": 200 <= response.status < 300
-                }
-        except Exception as e:
-            return {
-                "status": 0,
-                "data": {"error": str(e)},
-                "success": False
-            }
+        # Add trailing slash version if not present
+        if not endpoint.endswith('/') and '?' not in endpoint:
+            urls_to_try.append(f"{BACKEND_URL}{endpoint}/")
+        
+        last_error = None
+        
+        for url in urls_to_try:
+            try:
+                async with self.session.request(
+                    method, url, json=data, headers=headers, params=params
+                ) as response:
+                    # Skip redirects, try the other URL
+                    if response.status in [301, 302, 307, 308]:
+                        continue
+                        
+                    try:
+                        response_data = await response.json()
+                    except:
+                        response_data = {"text": await response.text()}
+                    
+                    return {
+                        "status": response.status,
+                        "data": response_data,
+                        "success": 200 <= response.status < 300
+                    }
+            except Exception as e:
+                last_error = e
+                continue
+        
+        return {
+            "status": 0,
+            "data": {"error": str(last_error) if last_error else "All URLs failed"},
+            "success": False
+        }
     
     def get_auth_headers(self, user_email: str) -> Dict[str, str]:
         """Get authorization headers for user"""
