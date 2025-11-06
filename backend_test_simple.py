@@ -278,6 +278,16 @@ class APITester:
             else:
                 print(f"  ❌ GET /jobs/{job_id} failed: {result['data']}")
                 job_success = False
+            
+            # Update job to active status for application testing
+            print(f"  Testing PATCH /jobs/{job_id} (activate)...")
+            update_data = {"status": "active"}
+            result = await self.make_authenticated_request("PATCH", f"/jobs/{job_id}", token, update_data)
+            if result["success"]:
+                print("  ✅ PATCH /jobs/{id} successful (job activated)")
+            else:
+                print(f"  ❌ PATCH /jobs/{job_id} failed: {result['data']}")
+                job_success = False
         else:
             print(f"  ❌ POST /jobs failed: {result['data']}")
             job_success = False
