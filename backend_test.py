@@ -628,13 +628,13 @@ class APITester:
         
         # Test 2: Send follow-up message with session_id
         if session_id:
-            print("  Testing POST /chat - Follow-up message...")
+            print("  Testing POST /chat/ - Follow-up message...")
             followup_data = {
                 "message": "Can you help me create a new job posting?",
                 "session_id": session_id
             }
             
-            result = await self.make_request("POST", "/chat", followup_data, headers=headers)
+            result = await self.make_request("POST", "/chat/", followup_data, headers=headers)
             if result["success"]:
                 print("  ✅ POST /chat with session_id successful")
                 response_data = result["data"]
