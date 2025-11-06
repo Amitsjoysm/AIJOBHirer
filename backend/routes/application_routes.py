@@ -215,9 +215,9 @@ async def process_application(application_id: str, job: dict):
                         application_id,
                         "rejected"
                     )
-                    logger.info(f\"Rejection email scheduled for application {application_id} (48h delay)\")
+                    logger.info(f"Rejection email scheduled for application {application_id} (48h delay)")
                 except Exception as e:
-                    logger.error(f\"Failed to schedule rejection email: {str(e)}\")
+                    logger.error(f"Failed to schedule rejection email: {str(e)}")
         
     except Exception as e:
         logger.error(f\"Failed to process application: {str(e)}\")
