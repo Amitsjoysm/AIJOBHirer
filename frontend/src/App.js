@@ -19,6 +19,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import CareerPage from './pages/CareerPage';
 import ApplyPage from './pages/ApplyPage';
+import { GoogleCallbackPage, MicrosoftCallbackPage } from './pages/OAuthCallbackPage';
 
 // Context
 import { AuthProvider, useAuth } from './context/AuthContext';
