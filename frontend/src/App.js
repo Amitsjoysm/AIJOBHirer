@@ -14,6 +14,7 @@ import JobDetailsPage from './pages/JobDetailsPage';
 import ApplicationsPage from './pages/ApplicationsPage';
 import ApplicationDetailsPage from './pages/ApplicationDetailsPage';
 import CandidatesPage from './pages/CandidatesPage';
+import CandidateDetailPage from './pages/CandidateDetailPage';
 import InterviewsPage from './pages/InterviewsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/EnhancedSettingsPage';
