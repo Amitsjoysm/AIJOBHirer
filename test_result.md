@@ -129,6 +129,18 @@ backend:
         agent: "testing"
         comment: "✅ Authentication fully tested - login, registration, and /me endpoint all working correctly with proper JWT token handling"
   
+  - task: "Chat/Orchestrator API"
+    implemented: true
+    working: "NA"
+    file: "routes/chat_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Chat endpoint with orchestrator integration - supports conversations, session management, and AI-powered responses"
+  
   - task: "Google OAuth Integration"
     implemented: true
     working: "NA"
