@@ -59,6 +59,7 @@ api_router.include_router(application_routes.router, prefix="/applications", tag
 api_router.include_router(candidate_routes.router, prefix="/candidates", tags=["Candidates"])
 api_router.include_router(interview_routes.router, prefix="/interviews", tags=["Interviews"])
 api_router.include_router(analytics_routes.router, prefix="/analytics", tags=["Analytics"])
+api_router.include_router(chat_routes.router, prefix="/chat", tags=["Chat"])
 
 app.include_router(api_router)
 
