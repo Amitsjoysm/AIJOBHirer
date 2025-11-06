@@ -409,23 +409,75 @@ class APITester:
         print("\n🎯 Testing Interview Management...")
         interview_success = True
         
-        # Use authenticated user
-        test_email = list(self.tokens.keys())[0] if self.tokens else None
+        # Use authenticated user with job
+        test_email = list(self.jobs.keys())[0] if self.jobs else None
         if not test_email:
-            print("  ❌ No authenticated users available")
+            print("  ❌ No jobs available for interview testing")
             self.test_results["interview_management"] = False
             return False
         
         headers = self.get_auth_headers(test_email)
+        job_id = self.jobs[test_email]
         
-        # Test get interviews
-        print("  Testing GET /interviews...")
-        result = await self.make_request("GET", "/interviews", headers=headers)
-        if result["success"]:
-            print(f"  ✅ GET /interviews successful - found {len(result['data'])} interviews")
+        # First get applications for the job to test interview endpoints
+        print(f"  Getting applications for job {job_id}...")
+        result = await self.make_request("GET", f"/applications/job/{job_id}", headers=headers)
+        
+        if result["success"] and result["data"]:
+            app_id = result["data"][0]["id"]
+            
+            # Test get interviews for application
+            print(f"  Testing GET /interviews/application/{app_id}...")
+            result = await self.make_request("GET", f"/interviews/application/{app_id}", headers=headers)
+            if result["success"]:
+                print(f"  ✅ GET /interviews/application/{app_id} successful - found {len(result['data'])} interviews")
+                
+                # If interviews exist, test updating one
+                if result["data"]:
+                    interview_id = result["data"][0]["id"]
+                    print(f"  Testing PATCH /interviews/{interview_id}...")
+                    update_data = {
+                        "status": "completed",
+                        "feedback": {
+                            "recommendation": "hire",
+                            "technical_score": 8,
+                            "communication_score": 9,
+                            "notes": "Strong candidate"
+                        }
+                    }
+                    result = await self.make_request("PATCH", f"/interviews/{interview_id}", update_data, headers=headers)
+                    if result["success"]:
+                        print("  ✅ PATCH /interviews/{id} successful")
+                    else:
+                        print(f"  ❌ PATCH /interviews/{interview_id} failed: {result['data']}")
+                        interview_success = False
+            else:
+                print(f"  ❌ GET /interviews/application/{app_id} failed: {result['data']}")
+                interview_success = False
+            
+            # Test schedule interview
+            print("  Testing POST /interviews...")
+            from datetime import datetime, timedelta
+            future_time = datetime.now() + timedelta(days=7)
+            
+            interview_data = {
+                "application_id": app_id,
+                "interviewer_id": "interviewer-123",
+                "interview_type": "technical",
+                "scheduled_at": future_time.isoformat(),
+                "duration_minutes": 60,
+                "meeting_link": "https://meet.google.com/abc-def-ghi",
+                "notes": "Technical interview for Python developer position"
+            }
+            
+            result = await self.make_request("POST", "/interviews", interview_data, headers=headers)
+            if result["success"]:
+                print("  ✅ POST /interviews successful")
+            else:
+                print(f"  ❌ POST /interviews failed: {result['data']}")
+                interview_success = False
         else:
-            print(f"  ❌ GET /interviews failed: {result['data']}")
-            interview_success = False
+            print("  ⚠️ No applications found to test interview endpoints")
         
         self.test_results["interview_management"] = interview_success
         return interview_success
