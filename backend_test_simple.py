@@ -62,7 +62,7 @@ class APITester:
         headers = {"Authorization": f"Bearer {token}"}
         
         # Specific endpoints that need trailing slash to avoid redirects
-        endpoints_needing_slash = ["/companies", "/candidates", "/email-config", "/jobs"]
+        endpoints_needing_slash = ["/companies", "/candidates", "/email-config", "/jobs", "/applications"]
         
         if any(endpoint.startswith(ep) and endpoint == ep for ep in endpoints_needing_slash):
             endpoint = endpoint + '/'
