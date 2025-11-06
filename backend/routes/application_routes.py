@@ -16,6 +16,9 @@ from typing import Optional, List
 from pydantic import BaseModel
 import PyPDF2
 import io
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
