@@ -30,6 +30,10 @@ class UserInDB(UserBase):
     auth_provider: AuthProvider
     google_id: Optional[str] = None
     microsoft_id: Optional[str] = None
+    google_credentials: Optional[Dict[str, Any]] = Field(default=None, exclude=True)
+    microsoft_credentials: Optional[Dict[str, Any]] = Field(default=None, exclude=True)
+    oauth_connected: bool = False
+    profile_picture: Optional[str] = None
     is_active: bool = True
     email_verified: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -40,6 +44,8 @@ class User(UserBase):
     
     id: str
     auth_provider: AuthProvider
+    oauth_connected: bool = False
+    profile_picture: Optional[str] = None
     is_active: bool
     email_verified: bool
     created_at: datetime
