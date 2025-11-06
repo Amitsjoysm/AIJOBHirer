@@ -61,6 +61,29 @@ api_router.include_router(analytics_routes.router, prefix="/analytics", tags=["A
 
 app.include_router(api_router)
 
+# Import middleware
+from middleware.rate_limiter import limiter, RateLimits
+from middleware.error_handler import (
+    validation_exception_handler,
+    http_exception_handler,
+    general_exception_handler
+)
+from middleware.security import SecurityHeadersMiddleware, RequestLoggingMiddleware
+from slowapi import _rate_limit_exceeded_handler
+
+# Add rate limiter to app state
+app.state.limiter = limiter
+
+# Exception handlers
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+# Security middleware
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestLoggingMiddleware)
+
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
