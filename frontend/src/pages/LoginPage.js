@@ -41,6 +41,21 @@ const LoginPage = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          {/* OAuth Buttons */}
+          <div className="space-y-3 mb-6">
+            <GoogleOAuthButton apiUrl={process.env.REACT_APP_BACKEND_URL} />
+            <MicrosoftOAuthButton apiUrl={process.env.REACT_APP_BACKEND_URL} />
+          </div>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
             <div>
               <Label htmlFor="email">Email Address</Label>
