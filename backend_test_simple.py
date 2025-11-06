@@ -92,6 +92,12 @@ class APITester:
     
     async def make_public_request(self, method: str, endpoint: str, data: Dict = None) -> Dict[str, Any]:
         """Make public HTTP request"""
+        # Specific endpoints that need trailing slash to avoid redirects
+        endpoints_needing_slash = ["/applications"]
+        
+        if any(endpoint.startswith(ep) and endpoint == ep for ep in endpoints_needing_slash):
+            endpoint = endpoint + '/'
+        
         url = f"{BACKEND_URL}{endpoint}"
         
         try:
