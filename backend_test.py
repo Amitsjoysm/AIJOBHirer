@@ -30,7 +30,12 @@ class APITester:
         self.jobs = {}
         
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        # Configure session to not follow redirects automatically
+        connector = aiohttp.TCPConnector()
+        self.session = aiohttp.ClientSession(
+            connector=connector,
+            connector_owner=False
+        )
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
