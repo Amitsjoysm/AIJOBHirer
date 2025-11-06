@@ -220,7 +220,7 @@ async def process_application(application_id: str, job: dict):
                     logger.error(f"Failed to schedule rejection email: {str(e)}")
         
     except Exception as e:
-        logger.error(f\"Failed to process application: {str(e)}\")
+        logger.error(f"Failed to process application: {str(e)}")
 
 @router.get("/job/{job_id}", response_model=List[Application])
 async def get_job_applications(
