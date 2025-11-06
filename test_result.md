@@ -245,15 +245,18 @@ backend:
   
   - task: "Application Management API"
     implemented: true
-    working: "NA"
+    working: true
     file: "routes/application_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Application processing endpoints implemented"
+      - working: true
+        agent: "testing"
+        comment: "✅ Application Management API fully tested - POST /applications (public), GET /applications/job/{id}, GET /applications/{id} all working. Fixed missing ai_evaluation field issue."
   
   - task: "Interview Management API"
     implemented: true
