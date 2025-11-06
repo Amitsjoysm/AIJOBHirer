@@ -585,6 +585,136 @@ class APITester:
         self.test_results["email_config"] = email_success
         return email_success
     
+    async def test_chat_orchestrator(self):
+        """Test Chat/Orchestrator API endpoints"""
+        print("\n🤖 Testing Chat/Orchestrator API...")
+        chat_success = True
+        session_id = None
+        
+        # Use admin user for testing
+        test_email = "admin@techcorp.com"
+        if test_email not in self.tokens:
+            print("  ❌ Admin user not authenticated")
+            self.test_results["chat_orchestrator"] = False
+            return False
+        
+        headers = self.get_auth_headers(test_email)
+        
+        # Test 1: Send initial chat message (POST /chat)
+        print("  Testing POST /chat - Initial message...")
+        chat_data = {
+            "message": "Hello, what can you help me with?"
+        }
+        
+        result = await self.make_request("POST", "/chat", chat_data, headers=headers)
+        if result["success"]:
+            print("  ✅ POST /chat successful")
+            response_data = result["data"]
+            
+            # Verify response structure
+            if "response" in response_data and "session_id" in response_data:
+                session_id = response_data["session_id"]
+                print(f"    📝 Response: {response_data['response'][:100]}...")
+                print(f"    🆔 Session ID: {session_id}")
+                
+                if "action_taken" in response_data:
+                    print(f"    ⚡ Action taken: {response_data['action_taken']}")
+            else:
+                print("  ⚠️ Response missing required fields (response, session_id)")
+                chat_success = False
+        else:
+            print(f"  ❌ POST /chat failed: {result['data']}")
+            chat_success = False
+        
+        # Test 2: Send follow-up message with session_id
+        if session_id:
+            print("  Testing POST /chat - Follow-up message...")
+            followup_data = {
+                "message": "Can you help me create a new job posting?",
+                "session_id": session_id
+            }
+            
+            result = await self.make_request("POST", "/chat", followup_data, headers=headers)
+            if result["success"]:
+                print("  ✅ POST /chat with session_id successful")
+                response_data = result["data"]
+                print(f"    📝 Response: {response_data.get('response', '')[:100]}...")
+            else:
+                print(f"  ❌ POST /chat with session_id failed: {result['data']}")
+                chat_success = False
+        
+        # Test 3: Get chat sessions (GET /chat/sessions)
+        print("  Testing GET /chat/sessions...")
+        result = await self.make_request("GET", "/chat/sessions", headers=headers)
+        if result["success"]:
+            sessions = result["data"]
+            print(f"  ✅ GET /chat/sessions successful - found {len(sessions)} sessions")
+            
+            # Verify session structure
+            if sessions and isinstance(sessions, list):
+                session = sessions[0]
+                required_fields = ["session_id", "last_message", "last_updated", "message_count"]
+                if all(field in session for field in required_fields):
+                    print("    📋 Session structure valid")
+                else:
+                    print("    ⚠️ Session missing required fields")
+                    chat_success = False
+        else:
+            print(f"  ❌ GET /chat/sessions failed: {result['data']}")
+            chat_success = False
+        
+        # Test 4: Get chat history for session (GET /chat/history/{session_id})
+        if session_id:
+            print(f"  Testing GET /chat/history/{session_id}...")
+            result = await self.make_request("GET", f"/chat/history/{session_id}", headers=headers)
+            if result["success"]:
+                history = result["data"]
+                print(f"  ✅ GET /chat/history/{session_id} successful - found {len(history)} messages")
+                
+                # Verify history structure
+                if history and isinstance(history, list):
+                    message = history[0]
+                    required_fields = ["role", "content", "created_at"]
+                    if all(field in message for field in required_fields):
+                        print("    📋 Message structure valid")
+                        # Check for both user and assistant messages
+                        roles = [msg.get("role") for msg in history]
+                        if "user" in roles and "assistant" in roles:
+                            print("    💬 Conversation flow confirmed")
+                        else:
+                            print("    ⚠️ Missing user or assistant messages")
+                    else:
+                        print("    ⚠️ Message missing required fields")
+                        chat_success = False
+            else:
+                print(f"  ❌ GET /chat/history/{session_id} failed: {result['data']}")
+                chat_success = False
+        
+        # Test 5: Delete chat session (DELETE /chat/sessions/{session_id})
+        if session_id:
+            print(f"  Testing DELETE /chat/sessions/{session_id}...")
+            result = await self.make_request("DELETE", f"/chat/sessions/{session_id}", headers=headers)
+            if result["success"]:
+                print("  ✅ DELETE /chat/sessions/{session_id} successful")
+                
+                # Verify session is deleted by checking sessions list
+                print("  Verifying session deletion...")
+                result = await self.make_request("GET", "/chat/sessions", headers=headers)
+                if result["success"]:
+                    sessions = result["data"]
+                    session_ids = [s.get("session_id") for s in sessions]
+                    if session_id not in session_ids:
+                        print("  ✅ Session successfully deleted")
+                    else:
+                        print("  ⚠️ Session still exists after deletion")
+                        chat_success = False
+            else:
+                print(f"  ❌ DELETE /chat/sessions/{session_id} failed: {result['data']}")
+                chat_success = False
+        
+        self.test_results["chat_orchestrator"] = chat_success
+        return chat_success
+    
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting HireFlow AI Backend API Tests")
