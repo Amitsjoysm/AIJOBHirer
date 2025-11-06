@@ -83,6 +83,7 @@ async def submit_application(
         "resume_url": application_data.resume_url,
         "questionnaire_answers": [a.model_dump() for a in application_data.questionnaire_answers],
         "status": ApplicationStatus.SUBMITTED,
+        "ai_evaluation": None,
         "notes": [],
         "tags": [],
         "created_at": datetime.now(timezone.utc).isoformat(),
