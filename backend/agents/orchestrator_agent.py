@@ -107,7 +107,7 @@ Available agents:
         
         message = context.get("message", "")
         conversation_history = context.get("conversation_history", [])
-        company = context.get("company", {})
+        company = context.get("company") or {}
         jobs = context.get("jobs", [])
         applications = context.get("applications", [])
         
