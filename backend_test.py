@@ -732,6 +732,7 @@ class APITester:
         await self.test_analytics()
         await self.test_oauth_endpoints()
         await self.test_email_config()
+        await self.test_chat_orchestrator()
         
         # Print summary
         print("\n" + "=" * 60)
