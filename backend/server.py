@@ -26,7 +26,13 @@ client = AsyncIOMotorClient(
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
-app = FastAPI(title="HireFlow AI", version="1.0.0")
+app = FastAPI(
+    title="HireFlow AI",
+    version="1.0.0",
+    description="Production-ready AI-powered hiring platform for SMBs",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
 api_router = APIRouter(prefix="/api")
 
 # Import routes
