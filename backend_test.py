@@ -303,20 +303,21 @@ class APITester:
         print("\n📝 Testing Application Management...")
         app_success = True
         
-        # Use authenticated user
-        test_email = list(self.tokens.keys())[0] if self.tokens else None
+        # Use authenticated user with job
+        test_email = list(self.jobs.keys())[0] if self.jobs else None
         if not test_email:
-            print("  ❌ No authenticated users available")
+            print("  ❌ No jobs available for application testing")
             self.test_results["application_management"] = False
             return False
         
         headers = self.get_auth_headers(test_email)
+        job_id = self.jobs[test_email]
         
-        # Test get applications
-        print("  Testing GET /applications...")
-        result = await self.make_request("GET", "/applications", headers=headers)
+        # Test get applications for job (correct endpoint)
+        print(f"  Testing GET /applications/job/{job_id}...")
+        result = await self.make_request("GET", f"/applications/job/{job_id}", headers=headers)
         if result["success"]:
-            print(f"  ✅ GET /applications successful - found {len(result['data'])} applications")
+            print(f"  ✅ GET /applications/job/{job_id} successful - found {len(result['data'])} applications")
             
             # If applications exist, test getting specific application
             if result["data"]:
@@ -328,8 +329,39 @@ class APITester:
                 else:
                     print(f"  ❌ GET /applications/{app_id} failed: {result['data']}")
                     app_success = False
+                
+                # Test update application status
+                print(f"  Testing PATCH /applications/{app_id}/status...")
+                status_data = {"status": "screening", "notes": "Initial screening"}
+                result = await self.make_request("PATCH", f"/applications/{app_id}/status", status_data, headers=headers)
+                if result["success"]:
+                    print("  ✅ PATCH /applications/{id}/status successful")
+                else:
+                    print(f"  ❌ PATCH /applications/{app_id}/status failed: {result['data']}")
+                    app_success = False
         else:
-            print(f"  ❌ GET /applications failed: {result['data']}")
+            print(f"  ❌ GET /applications/job/{job_id} failed: {result['data']}")
+            app_success = False
+        
+        # Test submit application (public endpoint)
+        print("  Testing POST /applications (public)...")
+        app_data = {
+            "job_id": job_id,
+            "candidate_email": "john.doe@example.com",
+            "candidate_name": "John Doe",
+            "candidate_phone": "+1234567890",
+            "candidate_linkedin": "https://linkedin.com/in/johndoe",
+            "resume_url": "https://example.com/resume.pdf",
+            "questionnaire_answers": [
+                {"question": "Years of experience?", "answer": "5 years"}
+            ]
+        }
+        
+        result = await self.make_request("POST", "/applications", app_data)
+        if result["success"]:
+            print("  ✅ POST /applications successful")
+        else:
+            print(f"  ❌ POST /applications failed: {result['data']}")
             app_success = False
         
         self.test_results["application_management"] = app_success
