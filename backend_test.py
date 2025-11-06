@@ -600,13 +600,13 @@ class APITester:
         
         headers = self.get_auth_headers(test_email)
         
-        # Test 1: Send initial chat message (POST /chat)
-        print("  Testing POST /chat - Initial message...")
+        # Test 1: Send initial chat message (POST /chat/)
+        print("  Testing POST /chat/ - Initial message...")
         chat_data = {
             "message": "Hello, what can you help me with?"
         }
         
-        result = await self.make_request("POST", "/chat", chat_data, headers=headers)
+        result = await self.make_request("POST", "/chat/", chat_data, headers=headers)
         if result["success"]:
             print("  ✅ POST /chat successful")
             response_data = result["data"]
