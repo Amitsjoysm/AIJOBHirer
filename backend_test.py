@@ -12,7 +12,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://deploy-prep-13.preview.emergentagent.com/api"
+BACKEND_URL = "https://hireflow-app-1.preview.emergentagent.com/api"
 
 # Test credentials from seed data
 TEST_CREDENTIALS = [
