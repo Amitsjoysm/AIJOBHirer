@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   Sparkles,
-  FileText
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 
 const DashboardLayout = ({ children }) => {
