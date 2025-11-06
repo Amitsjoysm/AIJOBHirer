@@ -27,10 +27,22 @@ app = FastAPI(title="HireFlow AI", version="1.0.0")
 api_router = APIRouter(prefix="/api")
 
 # Import routes
-from routes import auth_routes, company_routes, job_routes, application_routes, candidate_routes, interview_routes, analytics_routes
+from routes import (
+    auth_routes, 
+    oauth_routes,
+    email_config_routes,
+    company_routes, 
+    job_routes, 
+    application_routes, 
+    candidate_routes, 
+    interview_routes, 
+    analytics_routes
+)
 
 # Include all routes
 api_router.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(oauth_routes.router, prefix="/oauth", tags=["OAuth"])
+api_router.include_router(email_config_routes.router, prefix="/email-config", tags=["Email Configuration"])
 api_router.include_router(company_routes.router, prefix="/companies", tags=["Companies"])
 api_router.include_router(job_routes.router, prefix="/jobs", tags=["Jobs"])
 api_router.include_router(application_routes.router, prefix="/applications", tags=["Applications"])
