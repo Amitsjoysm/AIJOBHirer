@@ -40,6 +40,10 @@ class APITester:
     async def make_request(self, method: str, endpoint: str, data: Dict = None, 
                          headers: Dict = None, params: Dict = None) -> Dict[str, Any]:
         """Make HTTP request and return response data"""
+        # Ensure endpoint ends with / to avoid redirects
+        if not endpoint.endswith('/') and '?' not in endpoint and not endpoint.split('/')[-1].count('.'):
+            endpoint = endpoint + '/'
+        
         url = f"{BACKEND_URL}{endpoint}"
         
         try:
