@@ -1,9 +1,12 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pathlib import Path
+from slowapi.errors import RateLimitExceeded
 import os
 import logging
 
