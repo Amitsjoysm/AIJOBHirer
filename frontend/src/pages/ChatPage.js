@@ -107,7 +107,7 @@ const ChatPage = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/chat`,
+        `${API_URL}/chat/`,
         {
           message: userMessage.content,
           session_id: sessionId
