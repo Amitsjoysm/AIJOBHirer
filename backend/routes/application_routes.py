@@ -223,6 +223,44 @@ async def process_application(application_id: str, job: dict):
     except Exception as e:
         logger.error(f"Failed to process application: {str(e)}")
 
+@router.get("/", response_model=List[Application])
+async def get_all_applications(
+    status: Optional[ApplicationStatus] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all applications for the user's company jobs"""
+    
+    # Get user's company
+    company = await db_service.get_document("companies", {"user_id": current_user["id"]})
+    if not company:
+        return []
+    
+    # Get all jobs for the company
+    jobs = await db_service.get_documents("jobs", {"company_id": company["id"]})
+    job_ids = [job["id"] for job in jobs]
+    
+    if not job_ids:
+        return []
+    
+    # Build query
+    query = {"job_id": {"$in": job_ids}}
+    if status:
+        query["status"] = status
+    
+    # Get applications
+    applications = await db_service.get_documents(
+        "applications",
+        query,
+        sort=[("created_at", -1)]
+    )
+    
+    # Enrich with job titles
+    job_map = {job["id"]: job["title"] for job in jobs}
+    for app in applications:
+        app["job_title"] = job_map.get(app["job_id"], "Unknown Job")
+    
+    return applications
+
 @router.get("/job/{job_id}", response_model=List[Application])
 async def get_job_applications(
     job_id: str,
