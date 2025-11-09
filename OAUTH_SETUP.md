@@ -14,7 +14,7 @@ This document provides the OAuth redirect URLs needed for Google Cloud Console a
 
 ```
 Production:
-https://app-sync-restore.preview.emergentagent.com/auth/google/callback
+https://https-api-fix.preview.emergentagent.com/auth/google/callback
 
 Development:
 http://localhost:3000/auth/google/callback
@@ -46,7 +46,7 @@ http://localhost:3000/auth/google/callback
 
 ```
 Production:
-https://app-sync-restore.preview.emergentagent.com/auth/microsoft/callback
+https://https-api-fix.preview.emergentagent.com/auth/microsoft/callback
 
 Development:
 http://localhost:3000/auth/microsoft/callback
@@ -109,7 +109,7 @@ Authorization: Bearer {token}  # Optional - if provided, connects to existing ac
 Response:
 {
   "auth_url": "https://accounts.google.com/o/oauth2/auth?...",
-  "redirect_uri": "https://app-sync-restore.preview.emergentagent.com/auth/google/callback",
+  "redirect_uri": "https://https-api-fix.preview.emergentagent.com/auth/google/callback",
   "info": "Add this redirect URI to your Google Cloud Console"
 }
 ```
@@ -122,7 +122,7 @@ Content-Type: application/json
 {
   "code": "authorization_code_from_google",
   "state": "user_id_or_new_user",
-  "redirect_uri": "https://app-sync-restore.preview.emergentagent.com/auth/google/callback"
+  "redirect_uri": "https://https-api-fix.preview.emergentagent.com/auth/google/callback"
 }
 
 Response:
@@ -141,7 +141,7 @@ Authorization: Bearer {token}  # Optional
 Response:
 {
   "auth_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?...",
-  "redirect_uri": "https://app-sync-restore.preview.emergentagent.com/auth/microsoft/callback",
+  "redirect_uri": "https://https-api-fix.preview.emergentagent.com/auth/microsoft/callback",
   "info": "Add this redirect URI to your Azure App Registration"
 }
 ```
@@ -154,7 +154,7 @@ Content-Type: application/json
 {
   "code": "authorization_code_from_microsoft",
   "state": "user_id_or_new_user",
-  "redirect_uri": "https://app-sync-restore.preview.emergentagent.com/auth/microsoft/callback"
+  "redirect_uri": "https://https-api-fix.preview.emergentagent.com/auth/microsoft/callback"
 }
 ```
 

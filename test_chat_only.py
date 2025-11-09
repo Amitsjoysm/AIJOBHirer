@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://app-sync-restore.preview.emergentagent.com/api"
+BACKEND_URL = "https://https-api-fix.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "admin@techcorp.com"
