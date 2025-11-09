@@ -31,7 +31,8 @@ app = FastAPI(
     version="1.0.0",
     description="Production-ready AI-powered hiring platform for SMBs",
     docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    redoc_url="/api/redoc",
+    redirect_slashes=False
 )
 api_router = APIRouter(prefix="/api")
 
