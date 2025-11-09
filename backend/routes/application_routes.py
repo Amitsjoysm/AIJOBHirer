@@ -223,6 +223,7 @@ async def process_application(application_id: str, job: dict):
     except Exception as e:
         logger.error(f"Failed to process application: {str(e)}")
 
+@router.get("", response_model=List[Application])
 @router.get("/", response_model=List[Application])
 async def get_all_applications(
     status: Optional[ApplicationStatus] = None,
