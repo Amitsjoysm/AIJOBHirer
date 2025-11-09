@@ -30,6 +30,7 @@ class ChatResponse(BaseModel):
     action_taken: Optional[str] = None
     data: Optional[dict] = None
 
+@router.post("", response_model=ChatResponse)
 @router.post("/", response_model=ChatResponse)
 async def chat_with_orchestrator(
     chat_message: ChatMessage,
