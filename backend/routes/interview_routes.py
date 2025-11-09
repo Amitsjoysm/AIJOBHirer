@@ -26,6 +26,7 @@ class InterviewUpdate(BaseModel):
     status: Optional[InterviewStatus] = None
     feedback: Optional[InterviewFeedback] = None
 
+@router.post("", response_model=Interview, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=Interview, status_code=status.HTTP_201_CREATED)
 async def schedule_interview(
     interview_data: InterviewCreate,
