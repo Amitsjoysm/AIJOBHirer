@@ -14,6 +14,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 db_service = DatabaseService(db)
 
+@router.get("", response_model=List[Candidate])
 @router.get("/", response_model=List[Candidate])
 async def get_candidates(current_user: dict = Depends(get_current_user)):
     """Get all candidates for user's company"""
