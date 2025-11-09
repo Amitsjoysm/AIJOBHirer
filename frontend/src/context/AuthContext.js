@@ -18,6 +18,28 @@ export const AuthProvider = ({ children }) => {
 
   const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
+  // Add axios interceptor to handle 307 redirects by adding trailing slashes
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      async error => {
+        if (error.response?.status === 307 && error.config && !error.config.__isRetry) {
+          error.config.__isRetry = true;
+          // Add trailing slash if missing
+          if (!error.config.url.endsWith('/')) {
+            error.config.url += '/';
+          }
+          return axios(error.config);
+        }
+        return Promise.reject(error);
+      }
+    );
+    
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
+
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem('token');
